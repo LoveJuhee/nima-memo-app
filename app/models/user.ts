@@ -282,10 +282,10 @@ export class User implements IUser {
     /**
      * JSON 객체로 변환
      * 
-     * @param {*} [target]
+     * @param {*} [target={}]
      * @returns {*}
      */
-    public toJson(target?: any): any {
+    public toJson(target: any = {}): any {
         target = this.toRestJson(target);
         return this.toLocalJson(target);
     }
