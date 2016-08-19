@@ -5,7 +5,7 @@ import {FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES}  from '@angular/forms';
 import {FormGroup, FormBuilder, Validators}         from '@angular/forms';
 
 import {AlertForm} from '../../components';
-import {SignupPage} from '../../pages';
+import {SignupPage, MemoListPage} from '../../pages';
 import {Auth, AppStorage} from '../../providers';
 import {UserStorage} from '../../providers';
 import {User} from '../../models';
@@ -59,7 +59,7 @@ export class LoginPage {
         if (!res) {
           return;
         }
-        // TODO : 있다면 MEMO 페이지로 이동한다.
+        this.goToMain();
       })
       .catch(console.log);
   }
@@ -102,7 +102,7 @@ export class LoginPage {
         }
         this.auth.setCurrentUser(res)
           .then(() => {
-            // this.nav
+            this.goToMain();
           });
       });
   }
@@ -112,6 +112,10 @@ export class LoginPage {
    */
   public signup(): void {
     this.nav.setRoot(SignupPage);
+  }
+
+  public goToMain(): void {
+    this.nav.setRoot(MemoListPage);
   }
 
 }
