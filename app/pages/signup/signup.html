@@ -1,0 +1,38 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>signup</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="login" padding>
+  <form [formGroup]="form">
+    <ion-item>
+      <ion-label floating primary>계정</ion-label>
+      <ion-input type="text" formControlName="email"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label floating primary>암호</ion-label>
+      <ion-input type="password" formControlName="password"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label floating primary>암호 재확인</ion-label>
+      <ion-input type="password" formControlName="confirmPassword"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>OFFLINE</ion-label>
+      <ion-checkbox formControlName="offlineMode"></ion-checkbox>
+    </ion-item>
+
+    <div padding>
+      <button clear block (click)="signup(form.value)">Sign-Up</button>
+    </div>
+  </form>
+
+  <div padding>
+    <button secondary clear block (click)="login()">Login</button>
+  </div>
+
+</ion-content>
