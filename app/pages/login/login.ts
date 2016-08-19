@@ -5,6 +5,7 @@ import {FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES}  from '@angular/forms';
 import {FormGroup, FormBuilder, Validators}         from '@angular/forms';
 
 import {AlertForm} from '../../components';
+import {SignupPage} from '../../pages';
 import {Auth, AppStorage} from '../../providers';
 import {UserStorage} from '../../providers';
 import {User} from '../../models';
@@ -104,6 +105,13 @@ export class LoginPage {
             // this.nav
           });
       });
+  }
+
+  /**
+   * 가입 페이지로 이동
+   */
+  public signup(): void {
+    this.nav.setRoot(SignupPage);
   }
 
 }
