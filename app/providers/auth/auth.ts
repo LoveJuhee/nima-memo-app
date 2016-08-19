@@ -1,6 +1,6 @@
 import {Injectable}             from '@angular/core';
 import {AppStorage}             from '../';
-import {User}                   from '../../models';
+import {User, IUser}            from '../../models';
 
 let currentUser: User;
 
@@ -26,11 +26,35 @@ export class Auth {
           if (!res) {
             return Promise.resolve(undefined);
           }
-          currentUser.parse(res);
+          this.setUser(res);
           return Promise.resolve(currentUser);
         });
     } else {
       return Promise.resolve(currentUser);
+    }
+  }
+
+  /**
+   * 
+   * 
+   * @private
+   * @param {(string | IUser)} [data]
+   * @returns {void}
+   */
+  private setUser(data?: string | IUser): void {
+    if (!data) {
+      // 정보가 없으면 제거
+      currentUser = undefined;
+      return;
+    }
+
+    if (!currentUser) {
+      currentUser = new User();
+    }
+    if (typeof data === 'string') {
+      currentUser.parse(data);
+    } else {
+      currentUser.copy(data);
     }
   }
 
@@ -40,16 +64,9 @@ export class Auth {
    * @param {User} [user] 없으면 제거
    * @returns {Promise<any>}
    */
-  public setCurrentUser(user?: User): Promise<any> {
-    if (!user) {
-      currentUser = undefined;
-    } else {
-      if (!currentUser) {
-        currentUser = new User();
-      }
-      currentUser.copy(user);
-    }
-    return this.storage.set(Auth.USER_KEY, (user) ? user.stringify() : undefined);
+  public setCurrentUser(user?: IUser): Promise<any> {
+    this.setUser(user);
+    return this.storage.set(Auth.USER_KEY, (currentUser) ? currentUser.stringify() : undefined);
   }
 
   /**
