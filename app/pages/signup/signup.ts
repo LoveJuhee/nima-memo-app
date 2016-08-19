@@ -7,6 +7,7 @@ import {FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES} from '@angular/forms';
 import { FormGroup, FormBuilder, Validators }      from '@angular/forms';
 
 import {AlertForm} from '../../components';
+import {LoginPage} from '../../pages';
 import {UserStorage} from '../../providers';
 import {User} from '../../models';
 
@@ -96,6 +97,6 @@ export class SignupPage {
    * 로그인 페이지로 이동
    */
   public login(): void {
-    // this.nav.setRoot(LoginPage);
+    this.nav.setRoot(LoginPage);
   }
 }
