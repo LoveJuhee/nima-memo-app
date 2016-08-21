@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>memo-detail</ion-title>
+
+    <ion-buttons end>
+      <button class="button button-outline" (click)="editMode=true" [hidden]="editMode">Edit</button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="memo-detail">
+  <ion-list padding [hidden]="editMode">
+    <h3>{{memo.title}}</h3>
+    <p>{{memo.message}}</p>
+  </ion-list>
+  <ion-list [hidden]="!editMode">
+    <form [formGroup]="form">
+      <ion-item>
+        <ion-label floating primary>Title</ion-label>
+        <ion-input formControlName="title"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label floating primary>Message</ion-label>
+        <ion-textarea formControlName="message"></ion-textarea>
+      </ion-item>
+    </form>
+
+    <ion-item padding-left padding-right>
+      <button class="button button-outline" (click)="cancel()" item-left>Cancel</button>
+      <button class="button" (click)="save(form.value)" item-right>Save</button>
+    </ion-item>
+  </ion-list>
+
+</ion-content>
