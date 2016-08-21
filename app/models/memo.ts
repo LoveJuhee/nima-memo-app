@@ -29,7 +29,7 @@ export interface IMemoLocal {
      * 
      * @type {number}
      */
-    idx: number;
+    rowid: number;
     email: string;
 };
 
@@ -52,68 +52,113 @@ export interface IMemo extends IMemoRest, IMemoLocal { };
  */
 export class Memo implements IMemo {
 
-    private __id: string;
+    private __id: string = undefined;
     set _id(id: string) {
+        if (!id) {
+            id = undefined;
+        }
         this.__id = id;
     }
     get _id(): string {
         return this.__id;
     }
 
-    private _ownerId: string;
+    private _ownerId: string = undefined;
     set ownerId(ownerId: string) {
+        if (!ownerId) {
+            ownerId = undefined;
+        }
         this._ownerId = ownerId;
     }
     get ownerId(): string {
         return this._ownerId;
     }
 
-    private _title: string;
+    private _title: string = undefined;
     set title(title: string) {
+        if (!title) {
+            title = undefined;
+        }
         this._title = title;
     }
     get title(): string {
         return this._title;
     }
 
-    private _message: string;
+    private _message: string = undefined;
     set message(message: string) {
+        if (!message) {
+            message = undefined;
+        }
         this._message = message;
     }
     get message(): string {
         return this._message;
     }
 
-    private _createdAt: Date;
+    private _createdAt: Date = undefined;
     set createdAt(createdAt: Date) {
+        if (!createdAt) {
+            createdAt = undefined;
+        }
         this._createdAt = createdAt;
     }
     get createdAt(): Date {
         return this._createdAt;
     }
 
-    private _updatedAt: Date;
+    private _updatedAt: Date = undefined;
     set updatedAt(updatedAt: Date) {
+        if (!updatedAt) {
+            updatedAt = undefined;
+        }
         this._updatedAt = updatedAt;
     }
     get updatedAt(): Date {
         return this._updatedAt;
     }
 
-    private _idx: number;
-    set idx(idx: number) {
-        this._idx = idx;
+    private _rowid: number = -1;
+    set rowid(rowid: number) {
+        if (Number.isNaN(rowid)) {
+            rowid = -1;
+        }
+        this._rowid = rowid;
     }
-    get idx(): number {
-        return this._idx;
+    get rowid(): number {
+        return this._rowid;
     }
 
-    private _email: string;
+    private _email: string = undefined;
     set email(email: string) {
+        if (!email) {
+            email = undefined;
+        }
         this._email = email;
     }
     get email(): string {
         return this._email;
+    }
+
+    public isValidRowid(): boolean {
+        return Memo.isValidRowid(this);
+    }
+
+    /**
+     * rowid 유효여부 반환
+     * 
+     * @static
+     * @param {(IMemoLocal | number)} value
+     * @returns {boolean}
+     */
+    public static isValidRowid(value: IMemoLocal | number): boolean {
+        let check: number;
+        if (typeof value === 'IMemoLocal') {
+            check = value.rowid;
+        } else {
+            check = value;
+        }
+        return (Number.isNaN(check) === false || check >= 0);
     }
 
     /**
@@ -122,9 +167,31 @@ export class Memo implements IMemo {
      * @returns {Memo}
      */
     public reset(): Memo {
-        this._id = undefined;
+        this.resetRest();
+        this.resetLocal();
+        return this;
+    }
+
+    /**
+     * 초기화
+     * 
+     * @returns {Memo}
+     */
+    public resetRest(): Memo {
+        this._id = this.ownerId = undefined;
         this.title = this.message = undefined;
         this.createdAt = this.updatedAt = undefined;
+        return this;
+    }
+
+    /**
+     * 초기화
+     * 
+     * @returns {Memo}
+     */
+    public resetLocal(): Memo {
+        this.rowid = -1;
+        this.email = undefined;
         return this;
     }
 
@@ -165,7 +232,7 @@ export class Memo implements IMemo {
      */
     public copyRest(item: IMemoRest, deepCopy: boolean = false): Memo {
         if (!item) {
-            return this.reset();
+            return this.resetRest();
         }
         this._id = item._id;
         this.ownerId = item.ownerId;
@@ -185,9 +252,9 @@ export class Memo implements IMemo {
      */
     public copyLocal(item: IMemoLocal, deepCopy: boolean = false): Memo {
         if (!item) {
-            return this.reset();
+            return this.resetLocal();
         }
-        this.idx = item.idx;
+        this.rowid = item.rowid;
         this.email = item.email;
         return this;
     }
@@ -226,7 +293,7 @@ export class Memo implements IMemo {
      * @returns {*}
      */
     public toLocalJson(target: any = {}): any {
-        target.idx = this.idx;
+        target.rowid = this.rowid;
         target.email = this.email;
         return target;
     }
@@ -343,7 +410,7 @@ export class Memo implements IMemo {
         if (original.message !== target.message) { result.message = target.message; changed = true; }
         if (original.createdAt !== target.createdAt) { result.createdAt = target.createdAt; changed = true; }
         if (original.updatedAt !== target.updatedAt) { result.updatedAt = target.updatedAt; changed = true; }
-        if (original.idx !== target.idx) { result.idx = target.idx; changed = true; }
+        if (original.rowid !== target.rowid) { result.rowid = target.rowid; changed = true; }
         if (original.email !== target.email) { result.email = target.email; changed = true; }
         return changed;
     }
