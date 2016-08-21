@@ -33,14 +33,13 @@ export class MemoStorage {
   public create(): Promise<any> {
     const QUERY: string = `
       CREATE TABLE IF NOT EXISTS memo ( 
-          idx       int             PRIMARY KEY 
-        , email     VARCHAR(100)    NOT NULL
+          email     VARCHAR(100)    NOT NULL
         , id        VARCHAR(24) 
         , ownerId   VARCHAR(24)
         , title     VARCHAR(256)    DEFAULT 'empty'
         , message   VARCHAR(5120)   DEFAULT 'empty'
         , createdAt datetime        DEFAULT CURRENT_TIMESTAMP
-        , udpatedAt datetime        DEFAULT CURRENT_TIMESTAMP
+        , updatedAt datetime        DEFAULT CURRENT_TIMESTAMP
       )`;
     return db.query(QUERY);
   }
@@ -61,6 +60,26 @@ export class MemoStorage {
   }
 
   /**
+   * rowid 기반 update
+   * 
+   * @param {IMemo} memo
+   * @returns {Promise<any>}
+   */
+  public update(memo: IMemo): Promise<any> {
+    if (!memo || !Memo.isValidRowid(memo)) {
+      Promise.reject(new Error(`invalid memo.`));
+      return;
+    }
+    const QUERY: string = `
+      UPDATE memo
+         SET title = ?, message = ?, updatedAt = date('now')
+       WHERE rowid = ?
+    `;
+    const VALUES: any[] = [memo.title, memo.message, memo.rowid];
+    return db.query(QUERY, VALUES);
+  }
+
+  /**
    * 이메일 기반 검색
    * 
    * @param {string} email
@@ -72,7 +91,7 @@ export class MemoStorage {
       return;
     }
     const QUERY: string = `
-      SELECT *
+      SELECT *, rowid
         FROM memo 
        WHERE email = ?
     `;
@@ -84,6 +103,33 @@ export class MemoStorage {
       .catch(err => {
         console.log(err);
         return Promise.resolve([]);
+      });
+  }
+
+  /**
+   * rowid 기반 검색
+   * 
+   * @param {number} rowid
+   * @returns {Promise<Memo>}
+   */
+  public findByRowid(rowid: number): Promise<Memo> {
+    if (Memo.isValidRowid(rowid)) {
+      Promise.reject(new Error(`invalid id(${rowid}).`));
+      return;
+    }
+    const QUERY: string = `
+      SELECT *, rowid
+        FROM memo 
+       WHERE rowid = ?
+    `;
+    const VALUES: any[] = [rowid];
+    return db.query(QUERY, VALUES)
+      .then(res => {
+        return Promise.resolve(Memo.parse(res.res.rows[0]));
+      })
+      .catch(err => {
+        console.log(err);
+        return Promise.reject(err);
       });
   }
 }
