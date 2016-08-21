@@ -4,12 +4,13 @@ import {NavController}                              from 'ionic-angular';
 
 import {AlertForm} from '../../components';
 import {Auth, AppStorage} from '../../providers';
-import {MemoStorage} from '../../providers';
+import {MemoBusiness} from '../../providers';
 import {Memo} from '../../models';
+import {MemoDetailPage} from '../';
 
 @Component({
   templateUrl: 'build/pages/memo-list/memo-list.html',
-  providers: [Auth, AppStorage, MemoStorage],
+  providers: [Auth, AppStorage, MemoBusiness],
 })
 export class MemoListPage {
 
@@ -19,8 +20,9 @@ export class MemoListPage {
     private nav: NavController,
     private alertController: AlertController,
     private auth: Auth,
-    private storage: MemoStorage
+    private business: MemoBusiness
   ) {
+    this.loadMemos();
   }
 
   /**
@@ -29,7 +31,6 @@ export class MemoListPage {
    * @protected
    */
   protected ngAfterViewInit(): void {
-    this.loadMemos();
   }
 
   /**
@@ -47,11 +48,23 @@ export class MemoListPage {
           return;
         }
         let email: string = res.email;
-        return this.storage.findByEmail(email);
+        return this.business.findByEmail(email);
       })
       .then(res => {
         this.memos = res;
       });
   }
 
+  /**
+   * 메모 상세보기 화면 이동을 위한 호출부분 
+   * 
+   * @protected
+   * @param {Memo} [memo]
+   */
+  protected goToMemoDetail(memo?: Memo): void {
+    let params: any = {};
+    params.create = (memo) ? false : true;
+    params.memo = memo;
+    this.nav.push(MemoDetailPage, params);
+  }
 }
