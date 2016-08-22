@@ -52,10 +52,10 @@ export interface IMemo extends IMemoRest, IMemoLocal { };
  */
 export class Memo implements IMemo {
 
-    private __id: string = undefined;
+    private __id: string = '';
     set _id(id: string) {
         if (!id) {
-            id = undefined;
+            id = '';
         }
         this.__id = id;
     }
@@ -63,10 +63,10 @@ export class Memo implements IMemo {
         return this.__id;
     }
 
-    private _ownerId: string = undefined;
+    private _ownerId: string = '';
     set ownerId(ownerId: string) {
         if (!ownerId) {
-            ownerId = undefined;
+            ownerId = '';
         }
         this._ownerId = ownerId;
     }
@@ -74,10 +74,10 @@ export class Memo implements IMemo {
         return this._ownerId;
     }
 
-    private _title: string = undefined;
+    private _title: string = '';
     set title(title: string) {
         if (!title) {
-            title = undefined;
+            title = '';
         }
         this._title = title;
     }
@@ -85,10 +85,10 @@ export class Memo implements IMemo {
         return this._title;
     }
 
-    private _message: string = undefined;
+    private _message: string = '';
     set message(message: string) {
         if (!message) {
-            message = undefined;
+            message = '';
         }
         this._message = message;
     }
@@ -129,10 +129,10 @@ export class Memo implements IMemo {
         return this._rowid;
     }
 
-    private _email: string = undefined;
+    private _email: string = '';
     set email(email: string) {
         if (!email) {
-            email = undefined;
+            email = '';
         }
         this._email = email;
     }
@@ -399,19 +399,24 @@ export class Memo implements IMemo {
      * @static
      * @param {IMemo} original
      * @param {IMemo} target
-     * @param {IMemo} result
+     * @param {IMemo} [result] 객체가 있을 경우 복사.
      * @returns {boolean}
      */
-    public static diff(original: IMemo, target: IMemo, result: IMemo): boolean {
+    public static diff(original: IMemo, target: IMemo, result?: IMemo): boolean {
+        function copy(src: IMemo, desc: IMemo, key: string) {
+            if (src && desc && key) {
+                desc[key] = src[key];
+            }
+        }
         let changed: boolean = false;
-        if (original._id !== target._id) { result._id = target._id; changed = true; }
-        if (original.ownerId !== target.ownerId) { result.ownerId = target.ownerId; changed = true; }
-        if (original.title !== target.title) { result.title = target.title; changed = true; }
-        if (original.message !== target.message) { result.message = target.message; changed = true; }
-        if (original.createdAt !== target.createdAt) { result.createdAt = target.createdAt; changed = true; }
-        if (original.updatedAt !== target.updatedAt) { result.updatedAt = target.updatedAt; changed = true; }
-        if (original.rowid !== target.rowid) { result.rowid = target.rowid; changed = true; }
-        if (original.email !== target.email) { result.email = target.email; changed = true; }
+        if (original._id !== target._id) { copy(target, result, '_id'); changed = true; }
+        if (original.ownerId !== target.ownerId) { copy(target, result, 'ownerId'); changed = true; }
+        if (original.title !== target.title) { copy(target, result, 'title'); changed = true; }
+        if (original.message !== target.message) { copy(target, result, 'message'); changed = true; }
+        if (original.createdAt !== target.createdAt) { copy(target, result, 'createdAt'); changed = true; }
+        if (original.updatedAt !== target.updatedAt) { copy(target, result, 'updatedAt'); changed = true; }
+        if (original.rowid !== target.rowid) { copy(target, result, 'rowid'); changed = true; }
+        if (original.email !== target.email) { copy(target, result, 'email'); changed = true; }
         return changed;
     }
 }
