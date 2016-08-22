@@ -113,7 +113,7 @@ export class MemoStorage {
    * @returns {Promise<Memo>}
    */
   public findByRowid(rowid: number): Promise<Memo> {
-    if (Memo.isValidRowid(rowid)) {
+    if (!Memo.isValidRowid(rowid)) {
       Promise.reject(new Error(`invalid id(${rowid}).`));
       return;
     }
