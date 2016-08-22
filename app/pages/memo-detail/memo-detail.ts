@@ -2,7 +2,7 @@ import {Component}                                  from '@angular/core';
 import {Alert, AlertController}                     from 'ionic-angular';
 import {NavController, NavParams}                   from 'ionic-angular';
 import {FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES}  from '@angular/forms';
-import {FormGroup, FormBuilder, Validators}         from '@angular/forms';
+import {FormGroup, FormControl, FormBuilder, Validators}         from '@angular/forms';
 
 import {AlertForm} from '../../components';
 import {Auth, AppStorage} from '../../providers';
@@ -18,6 +18,8 @@ enum MemoDetailState { CREATE, VIEW, CHANGED };
 })
 export class MemoDetailPage {
   private form: FormGroup;
+  private formTitle: FormControl;
+  private formMessage: FormControl;
 
   /**
    * 상태정보 
@@ -93,9 +95,12 @@ export class MemoDetailPage {
       this.editMode = true;
       this.state = MemoDetailState.CREATE;
     }
+
+    this.formTitle = new FormControl(this.memo.title);
+    this.formMessage = new FormControl(this.memo.message);
     this.form = this.fb.group({
-      title: [this.memo.title, Validators.required],
-      message: [this.memo.message, Validators.required],
+      title: this.formTitle,
+      message: this.formMessage,
     });
 
     if (create)
@@ -119,30 +124,65 @@ export class MemoDetailPage {
   protected ngAfterViewInit(): void {
   }
 
-
   /**
    * 저장
    * 
    * @protected
    * @returns {void}
    */
-  protected save(value: IMemo): void {
-    this.memo.title = value.title;
-    this.memo.message = value.message;
-    let changed: boolean = Memo.diff(this.origin, this.memo, new Memo());
+  protected save(): void {
+    this.memo.title = this.form.value.title;
+    this.memo.message = this.form.value.message;
+    let changed: boolean = Memo.diff(this.origin, this.memo);
     if (!changed) {
       this.editMode = false;
       return;
     }
 
-    let fun: Promise<Memo> = (this.origin.rowid >= 0) ? this.business.update(this.memo) : this.business.insert(this.memo);
-    fun
+    let promiseResult: Promise<Memo> = (this.origin.rowid >= 0) ? this.business.update(this.memo) : this.business.insert(this.memo);
+    promiseResult
       .then(res => {
         this.origin.copy(res);
         this.memo.copy(res);
+        this.editMode = false;
+        this.state = MemoDetailState.VIEW;
       })
       .catch(err => {
+        AlertForm.ok(this.alertController, `오류`, `저장에 실패하였습니다.\n${err.message}`)
+          .present();
         console.log(err);
       });
   }
+
+  protected cancel(): void {
+    let target: MemoDetailPage = this;
+    function okFun(): () => void {
+      let t: MemoDetailPage = target;
+      return function (): void {
+        if (t.state === MemoDetailState.CREATE) {
+          t.nav.pop();
+        }
+        t.memo.copy(t.origin);
+        t.formTitle.updateValue(t.memo.title);
+        t.formMessage.updateValue(t.memo.message);
+        t.editMode = false;
+      };
+    }
+
+    this.memo.title = this.form.value.title;
+    this.memo.message = this.form.value.message;
+    let changed: boolean = Memo.diff(this.origin, this.memo);
+    if (changed) {
+      let fun: () => void = okFun();
+      AlertForm.okCancel(this.alertController, `주의`, `수정된 내용이 있습니다. 취소하시겠습니까?`, fun)
+        .present();
+    } else {
+      if (this.state === MemoDetailState.CREATE) {
+        this.nav.pop();
+      } else {
+        this.editMode = false;
+      }
+    }
+  }
 }
+
