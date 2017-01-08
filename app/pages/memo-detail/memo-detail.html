@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>memo-detail</ion-title>
+
+    <ion-buttons end [hidden]="!editMode">
+      <button class="button" (click)="cancel()">취소</button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="memo-detail">
+  <!--읽기모드-->
+  <ion-list [hidden]="editMode" padding>
+    <h3>{{memo.title}}</h3>
+    <p>{{memo.message}}</p>
+  </ion-list>
+
+  <!--수정모드-->
+  <ion-list [hidden]="!editMode" padding>
+    <form [formGroup]="form">
+      <ion-input class="memo-title" formControlName="title" placeholder="제목"></ion-input>
+      <ion-textarea class="memo-message" formControlName="message" placeholder="메모" rows="20"></ion-textarea>
+    </form>
+  </ion-list>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons>
+      <button class="button">색상</button>
+      <button class="button">태그</button>
+      <button class="button right-button" (click)="editMode=true" [hidden]="editMode">수정</button>
+      <button class="button right-button" (click)="save()" [hidden]="!editMode">저장</button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

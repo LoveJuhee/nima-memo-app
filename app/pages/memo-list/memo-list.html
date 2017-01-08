@@ -1,0 +1,54 @@
+<ion-header>
+  <ion-navbar>
+    <button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>{{title}}</ion-title>
+
+    <ion-buttons end>
+      <button>
+        <ion-icon name="search"></ion-icon>
+      </button>
+      <button>
+        <ion-icon name="more"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-list #memoList [hidden]="!memos.length">
+
+    <ion-item-sliding *ngFor="let memo of memos" #slidingItem [attr.track]="memo.title | lowercase" [hidden]="memo.hide">
+      <button ion-item (click)="goToMemoDetail(memo)">
+        <h3>{{memo.title}}</h3>
+        <p>
+          {{memo.timeStart}} &mdash;
+          {{memo.timeEnd}}:
+          {{memo.location}}
+        </p>
+      </button>
+
+      <ion-item-options>
+        <button favorite (click)="addFavorite(slidingItem, memo)" *ngIf="segment === 'all'">
+            Favorite
+          </button>
+        <button danger (click)="removeFavorite(slidingItem, memo, 'Remove Favorite')" *ngIf="segment === 'favorites'">
+            Remove
+          </button>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <ion-list-header [hidden]="memos.length">
+    No Memos Found
+  </ion-list-header>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons end>
+      <button class="button" (click)="goToMemoDetail()">New</button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

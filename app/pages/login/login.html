@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Login</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="login" padding>
+  <form [formGroup]="form">
+    <ion-item>
+      <ion-label floating primary>계정</ion-label>
+      <ion-input type="text" formControlName="email"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label floating primary>암호</ion-label>
+      <ion-input type="password" formControlName="password"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>OFFLINE</ion-label>
+      <ion-toggle formControlName="offlineMode" secondary></ion-toggle>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>자동 로그인</ion-label>
+      <ion-toggle formControlName="autoLogin" secondary></ion-toggle>
+    </ion-item>
+
+    <div padding>
+      <button clear block (click)="login(form.value)">Login</button>
+    </div>
+  </form>
+
+  <div padding>
+    <button secondary clear block (click)="signup()">Sign-Up</button>
+  </div>
+</ion-content>
